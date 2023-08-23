@@ -1,5 +1,6 @@
 import arcade
 import pymunk
+from pymunk import Vec2d
 
 # Globals
 WIDTH = 600
@@ -35,11 +36,13 @@ class PongGame(arcade.Window):
         
     def init_game(self):
         self.paddle1_pos = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
+        self.pos_paddle1 = (0 , 0) 
         self.paddle1_shape = pymunk.Poly.create_box(self.paddle1_pos, (PAD_WIDTH, PAD_HEIGHT))
         self.paddle1_shape.elasticity = 1.0
         self.paddle1_shape.filter = pymunk.ShapeFilter(categories=0b01)
         
         self.paddle2_pos = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
+        self.pos_paddle2 = (0 , 0) 
         self.paddle2_shape = pymunk.Poly.create_box(self.paddle2_pos, (PAD_WIDTH, PAD_HEIGHT))
         self.paddle2_shape.elasticity = 1.0
         self.paddle2_shape.filter = pymunk.ShapeFilter(categories=0b10)
@@ -75,6 +78,15 @@ class PongGame(arcade.Window):
             arcade.draw_text(f"Score {self.r_score}", WIDTH - 260, 350, arcade.color.WHITE, 20)
         
     def on_update(self, delta_time):
+
+        self.pos_paddle1 = (HALF_PAD_WIDTH, self.pos_paddle1[1] + self.paddle1_vel)
+        self.paddle1_pos.position = Vec2d(self.pos_paddle1[0],self.pos_paddle1[1])
+
+        self.pos_paddle2 = (HALF_PAD_WIDTH, self.pos_paddle2[1] + self.paddle2_vel)
+        self.paddle2_pos.position = Vec2d(self.pos_paddle2[0],self.pos_paddle2[1])
+
+        print(self.paddle1_pos.position)
+
         self.ball_body.position += self.ball_body.velocity * delta_time
         
         if self.ball_body.position.y <= BALL_RADIUS or self.ball_body.position.y >= HEIGHT - BALL_RADIUS:
@@ -95,8 +107,7 @@ class PongGame(arcade.Window):
         if self.ball_body.position.x > WIDTH - BALL_RADIUS:
             self.l_score += 1
             self.reset_ball()
-        
-        
+        #self.space.step(delta_time)
             
         # para incrementar la velocidad de la pelota mientras pasa el tiempo
         self.ball_body.velocity *= 1.001
@@ -112,13 +123,13 @@ class PongGame(arcade.Window):
             self.game_started = True
 
         if key == arcade.key.W:
-            self.paddle1_vel = 80
+            self.paddle1_vel = 10
         elif key == arcade.key.S:
-            self.paddle1_vel = -80
+            self.paddle1_vel = -10
         elif key == arcade.key.UP:
-            self.paddle2_vel = 80
+            self.paddle2_vel = 10
         elif key == arcade.key.DOWN:
-            self.paddle2_vel = -80
+            self.paddle2_vel = -10
             
     def on_key_release(self, key, modifiers):
         if key in (arcade.key.W, arcade.key.S):
@@ -126,11 +137,6 @@ class PongGame(arcade.Window):
         elif key in (arcade.key.UP, arcade.key.DOWN):
             self.paddle2_vel = 0
             
-    #def on_update(self, delta_time):
-     #   self.paddle1_pos.position = HALF_PAD_WIDTH, max(HALF_PAD_HEIGHT, min(HEIGHT - HALF_PAD_HEIGHT, self.paddle1_pos.position.y + self.paddle1_vel * delta_time))
-      #  self.paddle2_pos.position = WIDTH - HALF_PAD_WIDTH, max(HALF_PAD_HEIGHT, min(HEIGHT - HALF_PAD_HEIGHT, self.paddle2_pos.position.y + self.paddle2_vel * delta_time))
-       
-       # self.space.step(delta_time)
         
 if __name__ == "__main__":
     window = PongGame()
