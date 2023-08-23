@@ -79,15 +79,21 @@ class PongGame(arcade.Window):
         
     def on_update(self, delta_time):
 
+        # moviemiento padels
         self.pos_paddle1 = (HALF_PAD_WIDTH, self.pos_paddle1[1] + self.paddle1_vel)
         self.paddle1_pos.position = Vec2d(self.pos_paddle1[0],self.pos_paddle1[1])
 
         self.pos_paddle2 = (HALF_PAD_WIDTH, self.pos_paddle2[1] + self.paddle2_vel)
         self.paddle2_pos.position = Vec2d(self.pos_paddle2[0],self.pos_paddle2[1])
 
-        print(self.paddle1_pos.position)
-
         self.ball_body.position += self.ball_body.velocity * delta_time
+
+        #para que los padels no se salgan de la pantalla
+        new_y1 = min(max(HALF_PAD_HEIGHT, self.paddle1_pos.position.y + self.paddle1_vel), HEIGHT - HALF_PAD_HEIGHT)
+        new_y2 = min(max(HALF_PAD_HEIGHT, self.paddle2_pos.position.y + self.paddle2_vel), HEIGHT - HALF_PAD_HEIGHT)
+        
+        self.paddle1_pos.position = HALF_PAD_WIDTH, new_y1
+        self.paddle2_pos.position = WIDTH - HALF_PAD_WIDTH, new_y2
         
         if self.ball_body.position.y <= BALL_RADIUS or self.ball_body.position.y >= HEIGHT - BALL_RADIUS:
             self.ball_body.velocity = self.ball_body.velocity[0], -self.ball_body.velocity[1]
@@ -107,11 +113,20 @@ class PongGame(arcade.Window):
         if self.ball_body.position.x > WIDTH - BALL_RADIUS:
             self.l_score += 1
             self.reset_ball()
-        #self.space.step(delta_time)
+        
+        # funcionalidad de el rebote de la pelota con los padels
+        if self.paddle1_pos.position.y - HALF_PAD_HEIGHT <= self.ball_body.position.y <= self.paddle1_pos.position.y + HALF_PAD_HEIGHT:
+            if self.ball_body.position.x <= HALF_PAD_WIDTH + BALL_RADIUS:
+                self.ball_body.velocity = -self.ball_body.velocity[0], self.ball_body.velocity[1]
+
+        if self.paddle2_pos.position.y - HALF_PAD_HEIGHT <= self.ball_body.position.y <= self.paddle2_pos.position.y + HALF_PAD_HEIGHT:
+            if self.ball_body.position.x >= WIDTH - HALF_PAD_WIDTH - BALL_RADIUS:
+                self.ball_body.velocity = -self.ball_body.velocity[0], self.ball_body.velocity[1]
             
         # para incrementar la velocidad de la pelota mientras pasa el tiempo
         self.ball_body.velocity *= 1.001
 
+    # despues de un punto vuele a iniciar al medio
     def reset_ball(self):
         self.ball_body.position = WIDTH // 2, HEIGHT // 2
         initial_velocity = (100, 100)
