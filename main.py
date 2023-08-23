@@ -30,7 +30,7 @@ class PongGame(arcade.Window):
         self.init_game()
         
         self.game_started = False 
-        self.ball_image = arcade.load_texture("img/pelota.png")  # Load the ball image
+        self.ball_image = arcade.load_texture("img/pelota.png")  
         self.paddle_image = arcade.load_texture("img/bate.png")
         
     def init_game(self):
@@ -74,7 +74,7 @@ class PongGame(arcade.Window):
             arcade.draw_text(f"Score {self.l_score}", 170, 350, arcade.color.GREEN, 20)
             arcade.draw_text(f"Score {self.r_score}", WIDTH - 260, 350, arcade.color.WHITE, 20)
         
-    def update(self, delta_time):
+    def on_update(self, delta_time):
         self.ball_body.position += self.ball_body.velocity * delta_time
         
         if self.ball_body.position.y <= BALL_RADIUS or self.ball_body.position.y >= HEIGHT - BALL_RADIUS:
@@ -95,8 +95,10 @@ class PongGame(arcade.Window):
         if self.ball_body.position.x > WIDTH - BALL_RADIUS:
             self.l_score += 1
             self.reset_ball()
+        
+        
             
-        # Increase ball's velocity over time
+        # para incrementar la velocidad de la pelota mientras pasa el tiempo
         self.ball_body.velocity *= 1.001
 
     def reset_ball(self):
@@ -124,14 +126,13 @@ class PongGame(arcade.Window):
         elif key in (arcade.key.UP, arcade.key.DOWN):
             self.paddle2_vel = 0
             
-    def on_update(self, delta_time):
-        self.paddle1_pos.position = HALF_PAD_WIDTH, max(HALF_PAD_HEIGHT, min(HEIGHT - HALF_PAD_HEIGHT, self.paddle1_pos.position.y + self.paddle1_vel * delta_time))
-        self.paddle2_pos.position = WIDTH - HALF_PAD_WIDTH, max(HALF_PAD_HEIGHT, min(HEIGHT - HALF_PAD_HEIGHT, self.paddle2_pos.position.y + self.paddle2_vel * delta_time))
-        
-        self.space.step(delta_time)
+    #def on_update(self, delta_time):
+     #   self.paddle1_pos.position = HALF_PAD_WIDTH, max(HALF_PAD_HEIGHT, min(HEIGHT - HALF_PAD_HEIGHT, self.paddle1_pos.position.y + self.paddle1_vel * delta_time))
+      #  self.paddle2_pos.position = WIDTH - HALF_PAD_WIDTH, max(HALF_PAD_HEIGHT, min(HEIGHT - HALF_PAD_HEIGHT, self.paddle2_pos.position.y + self.paddle2_vel * delta_time))
+       
+       # self.space.step(delta_time)
         
 if __name__ == "__main__":
     window = PongGame()
     arcade.run()
 
-#cry
